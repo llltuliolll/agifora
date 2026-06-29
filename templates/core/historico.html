@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Histórico{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Histórico de Auditorias</h1>
+    <p>Todas as simulações já realizadas no sistema</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <!-- Filtros -->
+  <div class="card-agifora mb-4">
+    <div class="card-body-agifora">
+      <form method="get" class="row g-2 align-items-end">
+        <div class="col-sm-6 col-md-5">
+          <label class="form-label">Buscar</label>
+          <input type="text" name="q" value="{{ busca }}" class="form-control" placeholder="Nome do estabelecimento...">
+        </div>
+        <div class="col-sm-4 col-md-3">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="">Todos</option>
+            <option value="legal" {% if status_filter == "legal" %}selected{% endif %}>Legal</option>
+            <option value="abusivo" {% if status_filter == "abusivo" %}selected{% endif %}>Abusivo</option>
+            <option value="atencao" {% if status_filter == "atencao" %}selected{% endif %}>Atenção</option>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <button type="submit" class="btn-primary-agifora w-100">
+            <i data-feather="search" style="width:16px;height:16px"></i>
+            Filtrar
+          </button>
+        </div>
+        {% if busca or status_filter %}
+        <div class="col-sm-2">
+          <a href="{% url 'core:historico' %}" class="btn-outline-agifora w-100">Limpar</a>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  {% if resultados %}
+  <div class="card-agifora">
+    <table class="table-agifora">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data</th>
+          <th>Estabelecimento</th>
+          <th>Valor à Vista</th>
+          <th>CET (a.m.)</th>
+          <th>CET (a.a.)</th>
+          <th>Acréscimo</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in resultados %}
+        <tr>
+          <td class="text-muted-sm">{{ r.pk }}</td>
+          <td>{{ r.gerado_em|date:"d/m/Y" }}<br><span class="text-muted-sm">{{ r.gerado_em|date:"H:i" }}</span></td>
+          <td>{{ r.simulacao.credor.nome|default:"—" }}</td>
+          <td>R$ {{ r.simulacao.valor_a_vista|floatformat:2 }}</td>
+          <td><strong>{{ r.cet_calculado|floatformat:4 }}%</strong></td>
+          <td>{{ r.cet_anual|floatformat:2 }}%</td>
+          <td>{{ r.percentual_acrescimo|floatformat:2 }}%</td>
+          <td>
+            <span class="{{ r.status_badge_class }}">
+              <i data-feather="{{ r.status_icon }}" style="width:12px;height:12px"></i>
+              {{ r.get_status_abusividade_display }}
+            </span>
+          </td>
+          <td>
+            <a href="{% url 'auditoria:resultado' r.pk %}" class="btn btn-sm btn-light">
+              <i data-feather="eye" style="width:14px;height:14px"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+      <i data-feather="inbox" style="width:28px;height:28px;color:var(--gray-300)"></i>
+    </div>
+    <h5 style="color:var(--gray-500)">Nenhuma auditoria encontrada</h5>
+    <p class="text-muted-sm">
+      {% if busca or status_filter %}Tente ajustar os filtros.{% else %}Comece criando uma nova simulação.{% endif %}
+    </p>
+    <a href="{% url 'core:simulacao_nova' %}" class="btn-primary-agifora mt-2">
+      <i data-feather="plus" style="width:16px;height:16px"></i> Nova Auditoria
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

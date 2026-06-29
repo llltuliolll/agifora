@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+  <div class="container position-relative">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1 class="hero-title">
+          Descubra se você está pagando<br>
+          <span>juros abusivos</span>
+        </h1>
+        <p class="hero-subtitle">
+          O AgiFora audita parcelamentos informais e identifica cobranças ilegais conforme
+          a Lei de Usura (Decreto 22.626/33). Rápido, gratuito e acessível.
+        </p>
+        <div class="hero-cta">
+          <a href="{% url 'core:simulacao_nova' %}" class="btn-hero-primary">
+            <i data-feather="zap" style="width:18px;height:18px"></i>
+            Auditar Agora
+          </a>
+          <a href="{% url 'core:sobre' %}" class="btn-hero-secondary">Como funciona</a>
+        </div>
+
+        <div class="stats-grid mt-4">
+          <div class="stat-card">
+            <div class="stat-value">{{ stats.total_simulacoes }}</div>
+            <div class="stat-label">Simulações</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="color:#f87171">{{ stats.abusivas }}</div>
+            <div class="stat-label">Casos Abusivos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="color:#4ade80">{{ stats.legais }}</div>
+            <div class="stat-label">Dentro do Limite</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ stats.credores }}</div>
+            <div class="stat-label">Estabelecimentos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:2rem;width:100%;max-width:340px">
+          <p class="mb-1" style="color:rgba(255,255,255,.6);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em">Exemplo rápido</p>
+          <p style="color:#fff;font-weight:600;font-size:1rem;margin-bottom:1.5rem">Produto a prazo — TV 50"</p>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between;padding:.6rem .9rem;background:rgba(255,255,255,.07);border-radius:8px">
+              <span style="color:rgba(255,255,255,.7);font-size:.875rem">Valor à vista</span>
+              <span style="color:#fff;font-weight:600">R$ 2.000,00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.6rem .9rem;background:rgba(255,255,255,.07);border-radius:8px">
+              <span style="color:rgba(255,255,255,.7);font-size:.875rem">12x de</span>
+              <span style="color:#fff;font-weight:600">R$ 220,00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.6rem .9rem;background:rgba(255,255,255,.07);border-radius:8px">
+              <span style="color:rgba(255,255,255,.7);font-size:.875rem">Total pago</span>
+              <span style="color:#f87171;font-weight:700">R$ 2.640,00</span>
+            </div>
+            <div style="background:#EF444422;border:1px solid #EF4444;border-radius:8px;padding:.75rem;text-align:center">
+              <span style="color:#fca5a5;font-size:.8rem;font-weight:600">⚠ CET estimado: 2,9% a.m. — ABUSIVO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Como funciona -->
+<section class="section-gap">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 style="font-size:1.75rem;font-weight:800;color:var(--gray-900)">Como funciona</h2>
+      <p class="text-muted-sm">Três passos para saber se você está sendo lesado</p>
+    </div>
+    <div class="row g-3">
+      {% for step in "123" %}
+      <div class="col-md-4">
+        <div class="card-agifora h-100">
+          <div class="card-body-agifora text-center py-4">
+            <div style="width:56px;height:56px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.4rem;font-weight:800;color:var(--accent)">
+              {{ forloop.counter }}
+            </div>
+            {% if forloop.counter == 1 %}
+            <h5 style="font-weight:700">Informe os dados</h5>
+            <p class="text-muted-sm mb-0">Valor à vista, número de parcelas, valor de cada parcela e eventuais taxas extras.</p>
+            {% elif forloop.counter == 2 %}
+            <h5 style="font-weight:700">Calculamos o CET</h5>
+            <p class="text-muted-sm mb-0">O sistema calcula o Custo Efetivo Total usando algoritmos financeiros precisos.</p>
+            {% else %}
+            <h5 style="font-weight:700">Receba o veredito</h5>
+            <p class="text-muted-sm mb-0">Saiba se a oferta está dentro da Lei de Usura e receba orientação jurídica automaticamente.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Últimas auditorias -->
+{% if recentes %}
+<section class="section-gap" style="background:#fff;border-top:1px solid var(--gray-200)">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 style="font-size:1.25rem;font-weight:700;margin:0">Auditorias Recentes</h2>
+      <a href="{% url 'core:historico' %}" class="btn-outline-agifora">Ver todas</a>
+    </div>
+    <div class="card-agifora">
+      <table class="table-agifora">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Estabelecimento</th>
+            <th>CET (a.m.)</th>
+            <th>CET (a.a.)</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recentes %}
+          <tr>
+            <td>{{ r.gerado_em|date:"d/m/Y H:i" }}</td>
+            <td>{{ r.simulacao.credor.nome|default:"Não informado" }}</td>
+            <td><strong>{{ r.cet_calculado|floatformat:4 }}%</strong></td>
+            <td>{{ r.cet_anual|floatformat:2 }}%</td>
+            <td>
+              <span class="{{ r.status_badge_class }}">
+                <i data-feather="{{ r.status_icon }}" style="width:12px;height:12px"></i>
+                {{ r.get_status_abusividade_display }}
+              </span>
+            </td>
+            <td><a href="{% url 'auditoria:resultado' r.pk %}" class="btn btn-sm btn-light">Ver</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section-gap">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-lighter));border-radius:16px;padding:3rem 2rem;text-align:center;color:#fff">
+      <h2 style="font-weight:800;font-size:1.75rem;margin-bottom:.75rem">Pronto para auditar sua compra?</h2>
+      <p style="color:rgba(255,255,255,.75);max-width:480px;margin:0 auto 1.75rem">
+        Não deixe juros abusivos passarem despercebidos. Qualquer parcelamento pode ser auditado em segundos.
+      </p>
+      <a href="{% url 'core:simulacao_nova' %}" class="btn-hero-primary">
+        <i data-feather="shield" style="width:18px;height:18px"></i>
+        Iniciar Auditoria Gratuita
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

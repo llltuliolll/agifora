@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ credor.nome }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1>{{ credor.nome }}</h1>
+        <p>{{ credor.tipo }}{% if credor.cidade %} · {{ credor.cidade }}{% endif %}</p>
+      </div>
+      <a href="{% url 'core:credor_editar' credor.pk %}" class="btn-outline-agifora">Editar</a>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  {% if resultados %}
+  <div class="card-agifora">
+    <div class="card-header-agifora">
+      <div class="card-icon"><i data-feather="list" style="width:18px;height:18px"></i></div>
+      <h5>Auditorias deste estabelecimento ({{ resultados.count }})</h5>
+    </div>
+    <table class="table-agifora">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Valor à Vista</th>
+          <th>CET (a.m.)</th>
+          <th>CET (a.a.)</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in resultados %}
+        <tr>
+          <td>{{ r.gerado_em|date:"d/m/Y H:i" }}</td>
+          <td>R$ {{ r.simulacao.valor_a_vista|floatformat:2 }}</td>
+          <td><strong>{{ r.cet_calculado|floatformat:4 }}%</strong></td>
+          <td>{{ r.cet_anual|floatformat:2 }}%</td>
+          <td>
+            <span class="{{ r.status_badge_class }}">
+              <i data-feather="{{ r.status_icon }}" style="width:12px;height:12px"></i>
+              {{ r.get_status_abusividade_display }}
+            </span>
+          </td>
+          <td><a href="{% url 'auditoria:resultado' r.pk %}" class="btn btn-sm btn-light">Ver</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <p class="text-muted-sm">Nenhuma auditoria registrada para este estabelecimento.</p>
+    <a href="{% url 'core:simulacao_nova' %}" class="btn-primary-agifora mt-2">Criar auditoria</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

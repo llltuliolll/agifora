@@ -1,0 +1,6 @@
+Django==5.1.4
+psycopg2-binary==2.9.10
+numpy-financial==1.0.0
+numpy==2.2.1
+python-decouple==3.8
+Pillow==11.1.0

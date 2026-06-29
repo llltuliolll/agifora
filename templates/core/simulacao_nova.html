@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Nova Simulação{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Nova Auditoria</h1>
+    <p>Informe os dados da compra parcelada para calcular o Custo Efetivo Total (CET)</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4">
+
+    <!-- Formulário principal -->
+    <div class="col-lg-8">
+      <form method="post" id="simulacao-form">
+        {% csrf_token %}
+        <input type="hidden" name="taxas_json" id="taxas_json" value="[]">
+
+        <!-- Seção 1: Valor à vista -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i data-feather="tag" style="width:18px;height:18px;color:var(--accent)"></i>
+            Valor à Vista
+          </div>
+          <div class="form-section-body">
+            <div class="mb-1">
+              <label for="{{ sim_form.valor_a_vista.id_for_label }}" class="form-label">
+                Valor do produto/serviço à vista (R$)
+                <i data-feather="info" style="width:14px;height:14px;color:var(--gray-500)"
+                   data-bs-toggle="tooltip" title="O preço cobrado se você pagasse tudo de uma vez."></i>
+              </label>
+              {{ sim_form.valor_a_vista }}
+              {% if sim_form.valor_a_vista.errors %}
+              <div class="text-danger small mt-1">{{ sim_form.valor_a_vista.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção 2: Parcelamento -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i data-feather="credit-card" style="width:18px;height:18px;color:var(--accent)"></i>
+            Dados do Parcelamento
+          </div>
+          <div class="form-section-body">
+            <div class="row g-3">
+              <div class="col-sm-4">
+                <label for="{{ parc_form.num_parcelas.id_for_label }}" class="form-label">Nº de Parcelas</label>
+                {{ parc_form.num_parcelas }}
+                {% if parc_form.num_parcelas.errors %}
+                <div class="text-danger small mt-1">{{ parc_form.num_parcelas.errors.0 }}</div>
+                {% endif %}
+              </div>
+              <div class="col-sm-4">
+                <label for="{{ parc_form.valor_parcela.id_for_label }}" class="form-label">Valor da Parcela (R$)</label>
+                {{ parc_form.valor_parcela }}
+                {% if parc_form.valor_parcela.errors %}
+                <div class="text-danger small mt-1">{{ parc_form.valor_parcela.errors.0 }}</div>
+                {% endif %}
+              </div>
+              <div class="col-sm-4">
+                <label for="{{ parc_form.periodicidade.id_for_label }}" class="form-label">Periodicidade</label>
+                {{ parc_form.periodicidade }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção 3: Taxas Extras -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i data-feather="plus-circle" style="width:18px;height:18px;color:var(--accent)"></i>
+            Encargos Extras (opcional)
+            <span class="text-muted-sm ms-auto" style="font-weight:400;font-size:.8rem">TAC, seguro, emissão de boleto etc.</span>
+          </div>
+          <div class="form-section-body">
+            <div class="row g-2 mb-3">
+              <div class="col-sm-6">
+                <input type="text" id="taxa-nome-input" class="form-control" placeholder="Nome do encargo (Ex: TAC)">
+              </div>
+              <div class="col-sm-4">
+                <input type="number" id="taxa-valor-input" class="form-control" placeholder="Valor (R$)" min="0" step="0.01">
+              </div>
+              <div class="col-sm-2">
+                <button type="button" id="add-taxa-btn" class="btn-primary-agifora w-100" style="padding:.65rem">
+                  <i data-feather="plus" style="width:16px;height:16px"></i>
+                </button>
+              </div>
+            </div>
+            <div id="taxas-container"></div>
+          </div>
+        </div>
+
+        <!-- Seção 4: Estabelecimento (opcional) -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <i data-feather="map-pin" style="width:18px;height:18px;color:var(--accent)"></i>
+            Estabelecimento <span class="text-muted-sm ms-2" style="font-weight:400;font-size:.8rem">(opcional)</span>
+          </div>
+          <div class="form-section-body">
+            <label for="{{ sim_form.credor.id_for_label }}" class="form-label">Selecionar estabelecimento cadastrado</label>
+            {{ sim_form.credor }}
+            <div class="mt-2">
+              <a href="{% url 'core:credor_novo' %}" class="btn-outline-agifora btn-sm" style="padding:.4rem .9rem;font-size:.85rem">
+                <i data-feather="plus" style="width:14px;height:14px"></i> Cadastrar novo
+              </a>
+            </div>
+            <div class="mt-3">
+              <label for="{{ sim_form.observacao.id_for_label }}" class="form-label">Observação</label>
+              {{ sim_form.observacao }}
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="btn-primary-agifora">
+            <i data-feather="search" style="width:18px;height:18px"></i>
+            Calcular CET e Auditar
+          </button>
+          <a href="{% url 'core:home' %}" class="btn-outline-agifora">Cancelar</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Painel lateral -->
+    <div class="col-lg-4">
+      <!-- Preview ao vivo -->
+      <div class="card-agifora mb-3 sticky-top" style="top:1rem">
+        <div class="card-header-agifora">
+          <div class="card-icon"><i data-feather="activity" style="width:18px;height:18px"></i></div>
+          <h5>Prévia do Cálculo</h5>
+        </div>
+        <div class="card-body-agifora">
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;justify-content:space-between">
+              <span class="text-muted-sm">Total a pagar</span>
+              <span id="preview-total" class="fw-bold">—</span>
+            </div>
+            <hr class="divider m-0">
+            <div style="display:flex;justify-content:space-between">
+              <span class="text-muted-sm">Acréscimo</span>
+              <span id="preview-acrescimo" class="fw-bold text-red">—</span>
+            </div>
+            <hr class="divider m-0">
+            <div style="display:flex;justify-content:space-between">
+              <span class="text-muted-sm">Indicativo</span>
+              <span id="preview-status" class="fw-bold text-muted">—</span>
+            </div>
+          </div>
+          <div class="info-box info mt-3" style="font-size:.82rem">
+            <i data-feather="info" style="width:16px;height:16px;flex-shrink:0"></i>
+            <span>O CET exato será calculado após enviar o formulário.</span>
+          </div>
+        </div>
+
+        <!-- Referência legal -->
+        {% if indices %}
+        <div class="card-body-agifora" style="border-top:1px solid var(--gray-200)">
+          <p class="text-muted-sm mb-2" style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.75rem">Limites Legais Vigentes</p>
+          {% for idx in indices %}
+          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
+            <span style="font-size:.82rem;color:var(--gray-700)">{{ idx.descricao }}</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--primary)">{{ idx.taxa_maxima_permitida }}% a.m.</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

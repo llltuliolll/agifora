@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Sobre{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Sobre o AgiFora</h1>
+    <p>Transparência e justiça financeira para o consumidor brasileiro</p>
+  </div>
+</div>
+
+<div class="container pb-5" style="max-width:860px">
+
+  <div class="card-agifora mb-4">
+    <div class="card-body-agifora">
+      <h4 style="font-weight:700;color:var(--primary)">O que é o AgiFora?</h4>
+      <p>
+        O <strong>AgiFora</strong> é uma aplicação web desenvolvida para auditar cálculos de parcelamento e empréstimos,
+        identificando automaticamente cobranças abusivas e violações legais em negócios informais ou varejistas.
+      </p>
+      <p>
+        A ferramenta calcula o <strong>Custo Efetivo Total (CET)</strong> de qualquer operação de crédito e
+        compara com os limites estabelecidos pela Lei de Usura (Decreto nº 22.626/33), que proíbe taxas superiores
+        a <strong>1% ao mês (12% ao ano)</strong> para entidades que não fazem parte do Sistema Financeiro Nacional.
+      </p>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card-agifora h-100">
+        <div class="card-body-agifora">
+          <h5 style="font-weight:700">Base Legal</h5>
+          <ul style="padding-left:1.25rem;color:var(--gray-700);font-size:.9rem;line-height:1.8">
+            <li><strong>Decreto nº 22.626/33</strong> — Lei de Usura: proíbe juros superiores a 12% a.a.</li>
+            <li><strong>Lei nº 8.078/90</strong> — Código de Defesa do Consumidor: exige transparência nas relações de consumo.</li>
+            <li><strong>Constituição Federal/1988</strong> — Art. 5º: direitos do consumidor como direito fundamental.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card-agifora h-100">
+        <div class="card-body-agifora">
+          <h5 style="font-weight:700">Tecnologias Utilizadas</h5>
+          <ul style="padding-left:1.25rem;color:var(--gray-700);font-size:.9rem;line-height:1.8">
+            <li><strong>Backend:</strong> Python 3.12 + Django 5.1</li>
+            <li><strong>Cálculos:</strong> NumPy Financial (TIR/IRR)</li>
+            <li><strong>Banco de dados:</strong> PostgreSQL</li>
+            <li><strong>Frontend:</strong> Bootstrap 5, HTML5, CSS3, JavaScript</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-agifora">
+    <div class="card-body-agifora">
+      <h5 style="font-weight:700">Como o CET é calculado?</h5>
+      <p style="font-size:.9rem;color:var(--gray-700)">
+        O Custo Efetivo Total é calculado pela <strong>Taxa Interna de Retorno (TIR)</strong> do fluxo de caixa
+        da operação: o valor à vista é tratado como entrada (positiva) e cada parcela como saída (negativa).
+        A TIR resultante representa exatamente a taxa de juros embutida na operação — independente de
+        como o comerciante apresenta o preço.
+      </p>
+      <div class="info-box info mt-3">
+        <i data-feather="cpu" style="width:20px;height:20px;flex-shrink:0"></i>
+        <div>
+          <p style="margin:0;font-size:.88rem">
+            <strong>Fórmula:</strong> Valor_a_vista = Σ Parcela<sub>i</sub> / (1 + CET)<sup>i</sup><br>
+            Resolvemos para <em>CET</em> usando o algoritmo numérico Newton-Raphson via numpy_financial.irr().
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

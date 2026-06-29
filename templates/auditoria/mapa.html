@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Mapa de Transparência{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Mapa de Transparência</h1>
+    <p>Visão geral das avaliações por estabelecimento e localidade</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  {% if avaliacoes %}
+  <div class="row g-3">
+    {% for av in avaliacoes %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card-agifora">
+        <div class="card-body-agifora">
+          <div class="d-flex justify-content-between mb-2">
+            <span style="font-weight:700">{{ av.credor.nome }}</span>
+            <span class="{{ av.resultado.status_badge_class }}">{{ av.resultado.get_status_abusividade_display }}</span>
+          </div>
+          {% if av.cidade %}
+          <p class="text-muted-sm mb-1">
+            <i data-feather="map-pin" style="width:13px;height:13px"></i> {{ av.cidade }}
+          </p>
+          {% endif %}
+          <p class="text-muted-sm mb-0">CET: <strong>{{ av.resultado.cet_calculado|floatformat:4 }}% a.m.</strong></p>
+          <p class="text-muted-sm mb-0">{{ av.criado_em|date:"d/m/Y" }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <p class="text-muted-sm">Nenhuma avaliação registrada ainda.</p>
+    <a href="{% url 'core:simulacao_nova' %}" class="btn-primary-agifora mt-2">Criar primeira auditoria</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
